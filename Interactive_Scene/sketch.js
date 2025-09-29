@@ -73,7 +73,7 @@ function draw() {
   delayCounter++;
   if (delayCounter >= frameDelay) {
     frameIndex = (frameIndex + 1) % frames.length;
-    delayCounter = 1;
+    delayCounter = 0;
   }
   //console.log(frameIndex + ' ' + frames.length)
   if (frameIndex === frames.length-1 && currentAnim != "idle" && currentAnim != "run" ){
@@ -109,10 +109,10 @@ function mouseClicked() {
   }
 
 function movement(){
-  if (keyIsDown(65)) { 
+  if (keyIsDown(65) && dx >= -200) { 
     currentAnim = "run";
     dx -= 5; 
-  } else if (keyIsDown(68)) { 
+  } else if (keyIsDown(68) && dx < 500) { 
     currentAnim = "run";
     dx += 5; 
   } else {
@@ -121,4 +121,3 @@ function movement(){
     }
   }
 }
-

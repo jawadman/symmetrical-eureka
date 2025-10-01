@@ -27,11 +27,11 @@ function updateState() {
     lightColor === "green";
     
   }
-  else if(lightColor === "green" && millis() > lastSwitch  + yellowDur){
-    lightcolor === "yellow";
+  else if(lightColor === "green" && millis() > switchTime  + yellowDur){
+    lightColor === "yellow";
   }
-  else if(lightColor === "green" && millis() > lastSwitch  + redDur){
-    lightcolor === "red";
+  else if(lightColor === "green" && millis() > switchTime  + redDur){
+    lightColor === "red";
   }
 }
 

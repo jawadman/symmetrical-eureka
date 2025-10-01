@@ -81,7 +81,7 @@ function draw() {
   delayCounter++;
   if (delayCounter >= frameDelay) {
     frameIndex = (frameIndex + 1) % frames.length;
-    delayCounter = 1;
+    delayCounter = 0;
   }
   //console.log(frameIndex + ' ' + frames.length)
   if (frameIndex === frames.length-1 && currentAnim != "idle" && currentAnim != "run"){

@@ -20,7 +20,7 @@ let bg;
 let currentAnim = "idle";
 
 let dx = 0 ;
-let dy ;
+let dy = 0;
 
 function preload() {
 
@@ -95,6 +95,7 @@ function keyTyped() {
   if (key === " ") {  
     currentAnim = "roll";
     frameIndex = 0
+    dy += 1
 
    }
   

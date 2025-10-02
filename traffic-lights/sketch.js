@@ -6,13 +6,17 @@
 // changing according to time. You may want to investigate the millis()
 // function at https://p5js.org/reference/#/p5/millis
 
+
+
+let lightColor = "red";
+let switchTime = 0;
+let greenDur = 4000;
+let redDur = 4000;
+let yellowDur = 2000;
+
 function setup() {
   createCanvas(600, 600);
-  let lightColor = "red";
-  let switchTime = 0;
-  let greenDur = 4000;
-  let redDur = 4000;
-  let yellowDur = 2000;
+
 }
 
 function draw() {
@@ -24,14 +28,16 @@ function draw() {
 
 function updateState() {
   if (lightColor === "red" && millis() > switchTime  + greenDur) {
-    lightColor === "green";
-    
+    lightColor === "green";  
+    switchTime = millis()
   }
   else if(lightColor === "green" && millis() > switchTime  + yellowDur){
     lightColor === "yellow";
+    switchTime = millis()
   }
   else if(lightColor === "green" && millis() > switchTime  + redDur){
     lightColor === "red";
+    switchTime = millis()
   }
 }
 
@@ -54,11 +60,11 @@ function showCurrentLight() {
     ellipse(width/2, height/2 - 65, 50, 50); //top
   }
   else if (lightColor === "yellow") {
-    fill("yellow")
+    fill("yellow");
     ellipse(width/2, height/2, 50, 50); //middle
   }
-  else if (lightcolor === "green") {
-    fill(green);
+  else if (lightColor === "green") {
+    fill("green");
     ellipse(width/2, height/2 + 65, 50, 50); //bottom
   }
 }

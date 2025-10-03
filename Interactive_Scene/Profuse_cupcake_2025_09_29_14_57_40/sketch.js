@@ -23,7 +23,7 @@ let bg;
 let currentAnim = "idle";
 
 let dx = 0 ;
-let dy ;
+let dy = 0;
 
 function preload() {
 
@@ -109,7 +109,7 @@ function draw() {
 
 function keyTyped() {
   if (key === " ") {  
-    currentAnim = "jumpUp";
+    currentAnim = "roll";
     frameIndex = 0
 
    }
@@ -138,8 +138,14 @@ function movement(){
     dx -= 5; 
   } else if (keyIsDown(68)) { 
     currentAnim = "run";
-    dx += 5; 
-  } else {
+    dx += 5;
+  }
+    else if (keyIsDown(87)){
+      currentAnim = "jumpUp"
+      dy -= 50
+      frameIndex = 0
+    } 
+    else {
     if (currentAnim === "run") {
       currentAnim = "idle"; 
     }

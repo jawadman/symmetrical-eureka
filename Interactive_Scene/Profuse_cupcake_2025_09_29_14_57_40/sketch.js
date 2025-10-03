@@ -47,10 +47,10 @@ function preload() {
     runbackFrames.push(loadImage(`assets/run_back_ ${i}.png`));
   } 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    jumpUpFrames.push(loadImage(`assets/run_back_ ${i}.png`));
+    jumpUpFrames.push(loadImage(`assets/j_up_${i}.png`));
   } 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    jumpDownFrames.push(loadImage(`assets/run_back_ ${i}.png`));
+    jumpDownFrames.push(loadImage(`assets/j_down_${i}.png`));
   } 
 }
 
@@ -109,7 +109,7 @@ function draw() {
 
 function keyTyped() {
   if (key === " ") {  
-    currentAnim = "roll";
+    currentAnim = "jumpUp";
     frameIndex = 0
 
    }

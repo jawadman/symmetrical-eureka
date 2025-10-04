@@ -5,7 +5,9 @@
 
 // GOAL: make a character that can move around the screen and perform different actions
 // Controls: A and D to move left and right, W to jump, S to block, click to attack, space to roll
-// For my extra for experts, I used the push function, and a start screen that incorporates text.
+// For my extra for experts, I used the push function, a start screen that incorporates text, I also used preload function to
+// load in my image assets, although I dont recall if we've done that in class, and I also used the int() function to 
+// convert my timer from a float to an integer so it wouldn't look silly with  bunch of decimanls.
 // In terms of the basic requirements, for the assignment, I don't know if my for loop pushing my images into an array counts as 
 // using nested loops, but I did add a timer to the program, so I hope that makes up for the state variable requirement.
 //PLEASE NOTE: I WAS NOT ABLE TO FIX THE ISSUE OF THE CHARACTER DISAPPEARING WHEN MOVING RIGHT AFTER ATTACKING.
@@ -153,14 +155,14 @@ function draw() {
     // Draws the current frame
     image(frames[frameIndex], dx, dy, 500, 300);
 
-    // Update the frame index based on delay
+    // Update the frame index based on animation delay
     delayCounter++;
     if (delayCounter >= frameDelay) {
       frameIndex = (frameIndex + 1) % frames.length;
       delayCounter = 0;
     }
 
-  // Reset to idle after non-looping animations finish
+  // Reset to idle after animations taht dont loop finish
     if (frameIndex === frames.length-1 && currentAnim != "idle" && currentAnim != "run" ){
     currentAnim = "idle"
     frameIndex = 0

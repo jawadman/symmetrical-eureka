@@ -96,7 +96,10 @@ function preload() {
   for (let i = 1; i <= totalJumpFrames; i++) {
     jumpDownFrames.push(loadImage(`assets/j_down_${i}.png`));
   }
-
+  backG = {
+    dx: 800,
+    dy: 800
+  }
   bg = loadImage("assets/Desert_bg.jpg");
 }
 
@@ -112,7 +115,7 @@ function draw() {
   if (game === "start") {
     timer = millis();
     console.log("start");
-      background("gold");
+      background("black");
       textFont('Courier New');
       textSize(24);
       text("A Terrible Simulator For An Assassin", width / 4, height / 2);
@@ -122,7 +125,7 @@ function draw() {
   }
   // Main Game
   else{
-    background(bg);
+    background(bg, backG.dx, backG.dy);
     timerPassed = int((millis()-timer) / 1000);
     fill("black");
     textSize(20);
@@ -238,3 +241,5 @@ function movement() {
     }
   }
 }
+
+

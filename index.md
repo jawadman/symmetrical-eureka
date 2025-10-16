@@ -3,7 +3,10 @@
 ## CS Demos
 - [Traffic Lights](traffic-lights)
 - [Generative Art](generative art)
+- [perlin-noise](perlin-noise)
+- [Perlin Bubbles](perlin-bubbles)
+- [Perlin Terrain](perlin-terrain)
 
 ## Assignments
 - [Interactive Screen](Interactive_Scene)
-- [Bouncing Balls](bouncing-balls)
+- [Arrays and Objects](Arrays_Objects)

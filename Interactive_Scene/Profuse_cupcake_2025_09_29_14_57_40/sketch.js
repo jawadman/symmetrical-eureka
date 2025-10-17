@@ -20,15 +20,18 @@
 //Global Variables
 
 // Arrays to hold animation frames
-let idleFrames = [];
-let rollFrames = [];
-let attackFrames = [];
-let blockFrames = [];
-let runFrames = [];
-let runbackFrames = [];
-let jumpUpFrames = [];
-let jumpDownFrames = [];
+playerFrames = {
 
+idleFrames : [],
+rollFrames : [],
+attackFrames : [],
+blockFrames : [],
+runFrames : [],
+runbackFrames : [],
+jumpUpFrames : [],
+jumpDownFrames : []
+
+}
 // Total frames for each animation
 let totalRunFrames = 8;
 let totalRunBackFrames = 8;
@@ -47,9 +50,15 @@ let bg;
 // Base animation state
 let currentAnim = "idle";
 
-// Position variables
-let dx = 0;
-let dy = 0;
+// Object Positions
+backPos = {
+    dx: 800,
+    dy: 800
+  }
+charPos = {
+    dx: 0,
+    dy: 0,
+  }
 let initialY;
 
 // Jumping variables
@@ -66,39 +75,35 @@ let timerPassed = 0;
 // Preload function to load images into the empty arrays
 function preload() {
   for (let i = 1; i <= totalIdleFrames; i++) {
-    idleFrames.push(loadImage(`assets/idle_${i}.png`));
+    playerFrames.idleFrames.push(loadImage(`assets/idle_${i}.png`));
   }
 
   for (let i = 1; i <= totalRollFrames; i++) {
-    rollFrames.push(loadImage(`assets/roll_${i}.png`));
+    playerFrames.rollFrames.push(loadImage(`assets/roll_${i}.png`));
   }
 
   for (let i = 1; i <= totalAttackFrames; i++) {
-    attackFrames.push(loadImage(`assets/2_atk_${i}.png`));
+    playerFrames.attackFrames.push(loadImage(`assets/2_atk_${i}.png`));
   }
 
   for (let i = 1; i <= totalBlockFrames; i++) {
-    blockFrames.push(loadImage(`assets/defend_${i}.png`));
+    playerFrames.blockFrames.push(loadImage(`assets/defend_${i}.png`));
   }
 
   for (let i = 1; i <= totalRunFrames; i++) {
-    runFrames.push(loadImage(`assets/run_${i}.png`));
+    playerFrames.runFrames.push(loadImage(`assets/run_${i}.png`));
   }
 
   for (let i = 1; i <= totalRunBackFrames; i++) {
-    runbackFrames.push(loadImage(`assets/run_back_ ${i}.png`));
+    playerFrames.runbackFrames.push(loadImage(`assets/run_back_ ${i}.png`));
   }
 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    jumpUpFrames.push(loadImage(`assets/j_up_${i}.png`));
+    playerFrames.jumpUpFrames.push(loadImage(`assets/j_up_${i}.png`));
   }
 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    jumpDownFrames.push(loadImage(`assets/j_down_${i}.png`));
-  }
-  backG = {
-    dx: 800,
-    dy: 800
+    playerFrames.jumpDownFrames.push(loadImage(`assets/j_down_${i}.png`));
   }
   bg = loadImage("assets/Desert_bg.jpg");
 }
@@ -106,7 +111,7 @@ function preload() {
 function setup() {
   createCanvas(800, 800);
   initialY = height / 2 - 70;
-  dy = initialY;
+  charPos.dy = initialY;
 }
 
 
@@ -115,7 +120,7 @@ function draw() {
   if (game === "start") {
     timer = millis();
     console.log("start");
-      background("black");
+      background("red");
       textFont('Courier New');
       textSize(24);
       text("A Terrible Simulator For An Assassin", width / 4, height / 2);
@@ -125,7 +130,8 @@ function draw() {
   }
   // Main Game
   else{
-    background(bg, backG.dx, backG.dy);
+    //backMove();
+    background(bg, backPos.dx, backPos.dy);
     timerPassed = int((millis()-timer) / 1000);
     fill("black");
     textSize(20);
@@ -135,32 +141,32 @@ function draw() {
     // Determine which frames to play depending on the current animation
     let frames;
     if (currentAnim === "idle") {
-      frames = idleFrames;
+      frames = playerFrames.idleFrames;
     } 
     else if (currentAnim === "roll") {
-      frames = rollFrames;
+      frames = playerFrames.rollFrames;
     } 
     else if (currentAnim === "attack") {
-      frames = attackFrames;
+      frames = playerFrames.attackFrames;
     } 
     else if (currentAnim === "block") {
-      frames = blockFrames;
+      frames = playerFrames.blockFrames;
     } 
     else if (currentAnim === "run") {
-      frames = runFrames;
+      frames = playerFrames.runFrames;
     } 
     else if (currentAnim === "runback") {
-      frames = runbackFrames;
+      frames = playerFrames.runbackFrames;
     } 
     else if (currentAnim === "jumpUp") {
-      frames = jumpUpFrames;
+      frames = playerFrames.jumpUpFrames;
     } 
     else if (currentAnim === "jumpDown") {
-      frames = jumpDownFrames;
+      frames = playerFrames.jumpDownFrames;
     }
 
     // Draws the current frame
-    image(frames[frameIndex], dx, dy, 500, 300);
+    image(frames[frameIndex], charPos.dx, charPos.dy, 500, 300);
 
     // Update the frame index based on animation delay
     delayCounter++;
@@ -206,11 +212,11 @@ function movement() {
   // Horizontal movement
   if (keyIsDown(65)) {
     currentAnim = "runback";
-    dx -= 6;
+    charPos.dx -= 6;
   } 
   else if (keyIsDown(68)) {
     currentAnim = "run";
-    dx += 6;
+    charPos.dx += 6;
   } 
   // If no movement keys are pressed, the animation goes back to idle
   else {
@@ -222,7 +228,7 @@ function movement() {
   // The jumping mechanic
   if (isJumping) {
     //console.log("jumping");
-    dy += yVelocity;
+    charPos.dy += yVelocity;
     yVelocity += gravity;
 
     if (yVelocity < 0) {
@@ -234,8 +240,8 @@ function movement() {
       frameIndex = 0;
     }
 
-    if (dy >= initialY) {
-      dy = initialY;
+    if (charPos.dy >= initialY) {
+      charPos.dy = initialY;
       isJumping = false;
       currentAnim = "idle";
     }

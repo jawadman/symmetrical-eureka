@@ -32,6 +32,11 @@ jumpUpFrames : [],
 jumpDownFrames : []
 
 }
+
+bossFrames = {
+  idleFrames : [],
+  attack1Frames : []
+}
 // Total frames for each animation
 let totalRunFrames = 8;
 let totalRunBackFrames = 8;
@@ -75,35 +80,44 @@ let timerPassed = 0;
 // Preload function to load images into the empty arrays
 function preload() {
   for (let i = 1; i <= totalIdleFrames; i++) {
-    playerFrames.idleFrames.push(loadImage(`assets/idle_${i}.png`));
+    playerFrames.idleFrames.push(loadImage(`assets/playerAnims/idle_${i}.png`));
   }
 
   for (let i = 1; i <= totalRollFrames; i++) {
-    playerFrames.rollFrames.push(loadImage(`assets/roll_${i}.png`));
+    playerFrames.rollFrames.push(loadImage(`assets/playerAnims/roll_${i}.png`));
   }
 
   for (let i = 1; i <= totalAttackFrames; i++) {
-    playerFrames.attackFrames.push(loadImage(`assets/2_atk_${i}.png`));
+    playerFrames.attackFrames.push(loadImage(`assets/playerAnims/2_atk_${i}.png`));
   }
 
   for (let i = 1; i <= totalBlockFrames; i++) {
-    playerFrames.blockFrames.push(loadImage(`assets/defend_${i}.png`));
+    playerFrames.blockFrames.push(loadImage(`assets/playerAnims/defend_${i}.png`));
   }
 
   for (let i = 1; i <= totalRunFrames; i++) {
-    playerFrames.runFrames.push(loadImage(`assets/run_${i}.png`));
+    playerFrames.runFrames.push(loadImage(`assets/playerAnims/run_${i}.png`));
   }
 
   for (let i = 1; i <= totalRunBackFrames; i++) {
-    playerFrames.runbackFrames.push(loadImage(`assets/run_back_ ${i}.png`));
+    playerFrames.runbackFrames.push(loadImage(`assets/playerAnims/run_back_ ${i}.png`));
   }
 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    playerFrames.jumpUpFrames.push(loadImage(`assets/j_up_${i}.png`));
+    playerFrames.jumpUpFrames.push(loadImage(`assets/playerAnims/j_up_${i}.png`));
   }
 
   for (let i = 1; i <= totalJumpFrames; i++) {
-    playerFrames.jumpDownFrames.push(loadImage(`assets/j_down_${i}.png`));
+    playerFrames.jumpDownFrames.push(loadImage(`assets/playerAnims/j_down_${i}.png`));
+  }
+  for (let i = 1; i <= totalIdleFrames; i++) {
+    bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
+  }
+  for (let i = 1; i <= totalIdleFrames; i++) {
+    bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
+  }
+  for (let i = 1; i <= totalIdleFrames; i++) {
+    bossFrames.attack1Frames.push(loadImage(`assets/bossAnims/boss_atk1_${i}.png`));
   }
   bg = loadImage("assets/Desert_bg.jpg");
 }

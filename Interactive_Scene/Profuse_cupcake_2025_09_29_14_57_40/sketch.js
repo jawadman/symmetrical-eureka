@@ -122,6 +122,7 @@ function preload() {
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
   }
+  console.log()
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.attack1Frames.push(loadImage(`assets/bossAnims/boss_atk1_${i}.png`));
   }
@@ -160,13 +161,13 @@ function draw() {
 
     // Determine which frames to play depending on the current animation
     let Frames = {
-      player,
-      boss
+      player: "idle",
+      boss: "idle"
     }
     if (currentAnim.Boss === "idle") {
       Frames.boss = bossFrames.idleFrames;
     }
-    else if (currentBossAnim === "idle") {
+    else if (currentBossAnim === "attack") {
       Frames.boss = bossFrames.attack1Frames;
     }
 
@@ -198,15 +199,16 @@ function draw() {
 
     // Draws the current frame
     image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 500, 300);
-    image(Frames.boss[frameIndex.boss], 100, 350, 500, 400);
+    image(Frames.boss[frameIndex.boss], 100, 360, 500, 400);
 
     // Update the frame index based on animation delay
     delayCounter++;
     if (delayCounter >= frameDelay) {
       frameIndex.player = (frameIndex.player + 1) % Frames.player.length;
+      frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
       delayCounter = 0;
     }
-    if (delayCounter >= frameDelay) {
+   if (delayCounter >= frameDelay) {
       frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
       delayCounter = 0;
     }
@@ -246,6 +248,8 @@ function keyTyped() {
 function mouseClicked() {
   currentPlayerAnim = "attack";
   frameIndex.player = 0;
+  currentBossAnim = "attack";
+  frameIndex.boss = 0;
 }
 
 function movement() {

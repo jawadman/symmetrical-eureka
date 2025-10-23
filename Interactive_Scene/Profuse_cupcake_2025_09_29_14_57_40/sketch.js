@@ -208,7 +208,7 @@ function draw() {
     }
 //console.log('Draw: ' + currentAnim.Player);
     // Draws the current frame
-    image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 500, 300);
+    image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 200, 300);
     image(Frames.boss[frameIndex.boss], bossPos.dx, bossPos.dy, 500, 400);
 
     // Update the frame index based on animation delay

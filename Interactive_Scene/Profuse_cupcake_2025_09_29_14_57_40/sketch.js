@@ -35,7 +35,8 @@ jumpDownFrames : []
 
 bossFrames = {
   idleFrames : [],
-  attack1Frames : []
+  attack1Frames : [],
+  runFrames : []
 }
 // Total frames for each animation
 let totalRunFrames = 8;
@@ -69,6 +70,10 @@ backPos = {
 charPos = {
     dx: 0,
     dy: 0,
+  }
+bossPos = {
+    dx: 100,
+    dy: 360
   }
 let initialY;
 
@@ -119,10 +124,13 @@ function preload() {
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
   }
+
+  for (let i = 1; i <= totalIdleFrames; i++) {
+    bossFrames.runFrames.push(loadImage(`assets/bossAnims/run_${i}.png`));
+  }
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
   }
-  console.log()
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.attack1Frames.push(loadImage(`assets/bossAnims/boss_atk1_${i}.png`));
   }
@@ -140,7 +148,6 @@ function draw() {
   // Start Screen
   if (game === "start") {
     timer = millis();
-    console.log("start");
       background("red");
       textFont('Courier New');
       textSize(24);
@@ -167,39 +174,42 @@ function draw() {
     if (currentAnim.Boss === "idle") {
       Frames.boss = bossFrames.idleFrames;
     }
-    else if (currentBossAnim === "attack") {
+    else if (currentAnim.Boss === "attack") {
       Frames.boss = bossFrames.attack1Frames;
     }
-
-
-    if (currentPlayerAnim === "idle") {
-      Frames.player = playerFrames.idleFrames;
-    } 
-    else if (currentPlayerAnim === "roll") {
-      Frames.player = playerFrames.rollFrames;
-    } 
-    else if (currentPlayerAnim === "attack") {
-      Frames.player = playerFrames.attackFrames;
-    } 
-    else if (currentPlayerAnim === "block") {
-      Frames.player = playerFrames.blockFrames;
-    } 
-    else if (currentPlayerAnim === "run") {
-      Frames.player = playerFrames.runFrames;
-    } 
-    else if (currentPlayerAnim === "runback") {
-      Frames.player = playerFrames.runbackFrames;
-    } 
-    else if (currentPlayerAnim === "jumpUp") {
-      Frames.player = playerFrames.jumpUpFrames;
-    } 
-    else if (currentPlayerAnim === "jumpDown") {
-      Frames.player = playerFrames.jumpDownFrames;
+    else if (currentAnim.Boss === "run") {
+      Frames.boss = bossFrames.runFrames;
     }
 
+
+    if (currentAnim.Player === "idle") {
+      Frames.player = playerFrames.idleFrames;
+    } 
+    else if (currentAnim.Player === "roll") {
+      Frames.player = playerFrames.rollFrames;
+    } 
+    else if (currentAnim.Player === "attack") {
+      Frames.player = playerFrames.attackFrames;
+    } 
+    else if (currentAnim.Player === "block") {
+      Frames.player = playerFrames.blockFrames;
+    } 
+    else if (currentAnim.Player === "run") {
+      Frames.player = playerFrames.runFrames;
+    } 
+    else if (currentAnim.Player === "runback") {
+      Frames.player = playerFrames.runbackFrames;
+    } 
+    else if (currentAnim.Player === "jumpUp") {
+      Frames.player = playerFrames.jumpUpFrames;
+    } 
+    else if (currentAnim.Player === "jumpDown") {
+      Frames.player = playerFrames.jumpDownFrames;
+    }
+//console.log('Draw: ' + currentAnim.Player);
     // Draws the current frame
     image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 500, 300);
-    image(Frames.boss[frameIndex.boss], 100, 360, 500, 400);
+    image(Frames.boss[frameIndex.boss], bossPos.dx, bossPos.dy, 500, 400);
 
     // Update the frame index based on animation delay
     delayCounter++;
@@ -214,12 +224,12 @@ function draw() {
     }
 
   // Reset to idle after animations taht dont loop finish
-    if (frameIndex.player === Frames.player.length-1 && currentPlayerAnim != "idle" && currentPlayerAnim != "run" ){
-    currentPlayerAnim = "idle"
+    if (frameIndex.player === Frames.player.length-1 && currentAnim.Player != "idle" && currentAnim.Player != "run" && currentAnim.Player != "runback") {
+    currentAnim.Player = "idle"
     frameIndex.player = 0
   }
-    if (frameIndex === Frames.boss.length-1 && currentBossAnim != "idle" && currentBossAnim != "run" ){
-    currentBossAnim = "idle"
+    if (frameIndex === Frames.boss.length-1 && currentAnim.Boss != "idle" && currentAnim.Boss != "run") {
+    currentAnim.Boss = "idle"
     frameIndex.boss = 0
   }
 
@@ -228,11 +238,11 @@ function draw() {
 function keyTyped() {
   // Change animation based on key pressed
   if (key === " ") {
-    currentPlayerAnim = "roll";
+    currentAnim.Player = "roll";
     frameIndex.player = 0;
   } 
   else if (key === "s") {
-    currentPlayerAnim = "block";
+    currentAnim.Player = "block";
     frameIndex.player = 0;
   } 
   else if (key === "w" && !isJumping) {
@@ -246,26 +256,32 @@ function keyTyped() {
 
   // Right click to attack
 function mouseClicked() {
-  currentPlayerAnim = "attack";
+  currentAnim.Player = "attack";
   frameIndex.player = 0;
-  currentBossAnim = "attack";
+  currentAnim.Boss = "attack";
   frameIndex.boss = 0;
 }
 
 function movement() {
   // Horizontal movement
   if (keyIsDown(65)) {
-    currentPlayerAnim = "runback";
+    currentAnim.Player = "runback";
     charPos.dx -= 6;
+    bossPos.dx -= 6;
   } 
   else if (keyIsDown(68)) {
-    currentPlayerAnim = "run";
+    currentAnim.Player = "run";
     charPos.dx += 6;
+    currentAnim.Boss = "run";
+    bossPos.dx += 6;
   } 
   // If no movement keys are pressed, the animation goes back to idle
   else {
-    if (currentPlayerAnim === "run" || currentPlayerAnim === "runback") {
-      currentPlayerAnim = "idle";
+    if (currentAnim.Player === "run" || currentAnim.Player === "runback") {
+      currentAnim.Player = "idle";
+    }
+    if (currentAnim.Boss === "run") {
+      currentAnim.Boss = "idle";
     }
   }
 
@@ -276,18 +292,18 @@ function movement() {
     yVelocity += gravity;
 
     if (yVelocity < 0) {
-      currentPlayerAnim = "jumpUp";
+      currentAnim.Player = "jumpUp";
       frameIndex.player = 0;
     } 
     else {
-      currentPlayerAnim = "jumpDown";
+      currentAnim.Player = "jumpDown";
       frameIndex.player = 0;
     }
 
     if (charPos.dy >= initialY) {
       charPos.dy = initialY;
       isJumping = false;
-      currentPlayerAnim = "idle";
+      currentAnim.Player = "idle";
     }
   }
 }

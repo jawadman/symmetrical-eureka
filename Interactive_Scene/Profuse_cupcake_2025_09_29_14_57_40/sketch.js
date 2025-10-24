@@ -36,7 +36,8 @@ jumpDownFrames : []
 bossFrames = {
   idleFrames : [],
   attack1Frames : [],
-  runFrames : []
+  runFrames : [],
+  runbackFrames : []
 }
 // Total frames for each animation
 let totalRunFrames = 8;
@@ -125,6 +126,7 @@ function preload() {
     bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
   }
 
+
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.runFrames.push(loadImage(`assets/bossAnims/run_${i}.png`));
   }
@@ -134,6 +136,10 @@ function preload() {
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.attack1Frames.push(loadImage(`assets/bossAnims/boss_atk1_${i}.png`));
   }
+  for (let i = 1; i <= totalIdleFrames; i++) {
+    bossFrames.runbackFrames.push(loadImage(`assets/bossAnims/run_back_${i}.png`));
+  }
+
   bg = loadImage("assets/Desert_bg.jpg");
 }
 
@@ -180,6 +186,9 @@ function draw() {
     else if (currentAnim.Boss === "run") {
       Frames.boss = bossFrames.runFrames;
     }
+    else if (currentAnim.Boss === "runback") {
+      Frames.boss = bossFrames.runbackFrames;
+    }
 
 
     if (currentAnim.Player === "idle") {
@@ -223,12 +232,12 @@ function draw() {
       delayCounter = 0;
     }
 
-  // Reset to idle after animations taht dont loop finish
+  // Reset to idle after animations that dont loop finish
     if (frameIndex.player === Frames.player.length-1 && currentAnim.Player != "idle" && currentAnim.Player != "run" && currentAnim.Player != "runback") {
     currentAnim.Player = "idle"
     frameIndex.player = 0
   }
-    if (frameIndex === Frames.boss.length-1 && currentAnim.Boss != "idle" && currentAnim.Boss != "run") {
+    if (frameIndex === Frames.boss.length-1 && currentAnim.Boss != "idle" && currentAnim.Boss != "run" && currentAnim.Boss != "runback") {
     currentAnim.Boss = "idle"
     frameIndex.boss = 0
   }
@@ -258,6 +267,7 @@ function keyTyped() {
 function mouseClicked() {
   currentAnim.Player = "attack";
   frameIndex.player = 0;
+
   currentAnim.Boss = "attack";
   frameIndex.boss = 0;
 }
@@ -267,6 +277,8 @@ function movement() {
   if (keyIsDown(65)) {
     currentAnim.Player = "runback";
     charPos.dx -= 6;
+
+    currentAnim.Boss = "runback";
     bossPos.dx -= 6;
   } 
   else if (keyIsDown(68)) {
@@ -280,7 +292,7 @@ function movement() {
     if (currentAnim.Player === "run" || currentAnim.Player === "runback") {
       currentAnim.Player = "idle";
     }
-    if (currentAnim.Boss === "run") {
+    if (currentAnim.Boss === "run" || currentAnim.Boss === "runback") {
       currentAnim.Boss = "idle";
     }
   }

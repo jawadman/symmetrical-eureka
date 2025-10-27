@@ -10,4 +10,4 @@
 
 ## Assignments
 - [Interactive Screen](Interactive_Scene)
-- [Arrays and Objects](Arrays and Objects)
+- [Arrays and Objects](Arrays_Objects)

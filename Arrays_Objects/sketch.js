@@ -383,7 +383,8 @@ function mouseClicked() {
   // Determine attack direction
   if (mouseX < charPos.dx + 100) { 
     setAnimation("player", "attackback");
-  } else {
+  } 
+  else {
     setAnimation("player", "attack");
   }
 
@@ -438,7 +439,7 @@ function movement() {
       currentAnim.player = "idle";
     }
   }
-
+// Boss AI to follow and attack player
 let attackRange = 20;
 let distanceX = charPos.dx - bossPos.dx;
 

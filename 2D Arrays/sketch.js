@@ -19,6 +19,14 @@
 
 //Global Variables
 
+const CELL_SIZE = 10;
+const OPEN_TILE = 0;
+const IMPASSIBLE = 1;
+
+let grid; 
+let rows;
+let cols;
+
 // Arrays to hold animation frames
 playerFrames = {
 
@@ -169,7 +177,9 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(800, 800);
+  createCanvas(windowWidth * 0.9, windowHeight * 0.9);
+  cols = Math.floor(width/CELL_SIZE);
+  rows = Math.floor(height/CELL_SIZE);
   initialY = height / 2 - 70;
   charPos.dy = initialY;
 }

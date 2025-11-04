@@ -30,24 +30,24 @@ let cols;
 // Arrays to hold animation frames
 playerFrames = {
 
-idleFrames : [],
-rollFrames : [],
-attackFrames : [],
-attackbackFrames : [],
-blockFrames : [],
-runFrames : [],
-runbackFrames : [],
-jumpUpFrames : [],
-jumpDownFrames : []
+  idleFrames : [],
+  rollFrames : [],
+  attackFrames : [],
+  attackbackFrames : [],
+  blockFrames : [],
+  runFrames : [],
+  runbackFrames : [],
+  jumpUpFrames : [],
+  jumpDownFrames : []
 
-}
+};
 
 bossFrames = {
   idleFrames : [],
   attack1Frames : [],
   runFrames : [],
   runbackFrames : []
-}
+};
 // Total frames for each animation
 let totalRunFrames = 8;
 let totalRunBackFrames = 8;
@@ -61,7 +61,7 @@ let totalJumpFrames = 3;
 let frameIndex = {
   player: 0,
   boss: 0
-}
+};
 let delayCounter = 0;
 let frameDelay = 7;
 let bg;
@@ -70,21 +70,21 @@ let bg;
 let currentAnim ={
   player: "idle",
   boss: "idle",  
-} 
+} ;
 
 // Object Positions
 backPos = {
-    dx: 800,
-    dy: 800
-  }
+  dx: 800,
+  dy: 800
+};
 charPos = {
-    dx: 0,
-    dy: 0,
-  }
+  dx: 0,
+  dy: 0,
+};
 bossPos = {
-    dx: 100,
-    dy: 360
-  }
+  dx: 100,
+  dy: 360
+};
 let initialY;
 
 // Jumping variables
@@ -180,65 +180,67 @@ function setup() {
   createCanvas(windowWidth * 0.9, windowHeight * 0.9);
   cols = Math.floor(width/CELL_SIZE);
   rows = Math.floor(height/CELL_SIZE);
-  initialY = height / 2 - 70;
+  initialY = height / 2 - 65;
   charPos.dy = initialY;
+  charPos.dx = width/4;
+  bossPos.dx = width/2;
+  bossPos.dy = initialY + 30;
 }
 
 
 function draw() {
   // Start Screen
   if (game === "start") {
-  if (!bgMusic.isPlaying()) {
-    bgMusic.loop();
-    bgMusic.setVolume(0.5);
+    if (!bgMusic.isPlaying()) {
+      bgMusic.loop();
+      bgMusic.setVolume(0.5);
+    } timer = millis();
+    background("black");
+    textSize(36);
+    textAlign(CENTER, CENTER);
+    fill("red");
+    textLeading(100); 
+
+    textAlign(CENTER, CENTER);
+    fill("red");
+
+    textSize(48);
+    text("A Terrible Simulator For An Assassin", width / 2, height / 2 - 80);
+    textSize(20);
+    text("Press Any Key To Start", width / 2, height / 2 - 10);
+    
+    fill("white");
+    textSize(30);
+    text("W to Jump, A to Move Left, D to Move Right", width / 2, height / 2 + 80); 
+    text("Click to Attack, S to Block, Space to Roll", width / 2, height / 2 + 120);
+
   }
-  timer = millis();
-  background("black");
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  fill("red");
-  textLeading(100); 
-
-  textAlign(CENTER, CENTER);
-  fill("red");
-
-  textSize(48);
-  text("A Terrible Simulator For An Assassin", width / 2, height / 2 - 80);
-  textSize(20);
-  text("Press Any Key To Start", width / 2, height / 2 - 10);
-  
-  fill("white");
-  textSize(30);
-  text("W to Jump, A to Move Left, D to Move Right", width / 2, height / 2 + 80); 
-  text("Click to Attack, S to Block, Space to Roll", width / 2, height / 2 + 120);
-
-}
   // Main Game
   else{
     
     if (playerHealth <= 0 || bossHealth <= 0) {
-    game = "gameOver";
-  }
-    if (game === "gameOver") {
-    background("black");
-    fill("red");
-    textSize(48);
-    textAlign(CENTER, CENTER);
-
-    if (playerHealth <= 0) {
-      text("GAME OVER", width / 2, height / 2 - 40);
-      text("You Died!", width / 2, height / 2 + 20);
-    } 
-    else if (bossHealth <= 0) {
-      text("YOU WIN", width / 2, height / 2 - 40);
-      text("The Wizard Has Been Slain", width / 2, height / 2 + 20);
+      game = "gameOver";
     }
+    if (game === "gameOver") {
+      background("black");
+      fill("red");
+      textSize(48);
+      textAlign(CENTER, CENTER);
 
-    textSize(24);
-    fill("white");
-    text("Press R to Restart", width / 2, height / 2 + 100);
-    return; 
-  }
+      if (playerHealth <= 0) {
+        text("GAME OVER", width / 2, height / 2 - 40);
+        text("You Died!", width / 2, height / 2 + 20);
+      } 
+      else if (bossHealth <= 0) {
+        text("YOU WIN", width / 2, height / 2 - 40);
+        text("The Wizard Has Been Slain", width / 2, height / 2 + 20);
+      }
+
+      textSize(24);
+      fill("white");
+      text("Press R to Restart", width / 2, height / 2 + 100);
+      return; 
+    }
 
 
 
@@ -270,7 +272,7 @@ function draw() {
     let Frames = {
       player: "idle",
       boss: "idle"
-    }
+    };
 
     // Frames for boss animations
     if (currentAnim.boss === "idle") {
@@ -317,10 +319,10 @@ function draw() {
 //console.log('Draw: ' + currentAnim.player);
     // Draws the current frame
     if (Frames.player.length > 0) {
-  image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 200, 300);
+      image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 200, 300);
 }
     if (Frames.boss.length > 0) {
-  image(Frames.boss[frameIndex.boss], bossPos.dx, bossPos.dy, 500, 400);
+      image(Frames.boss[frameIndex.boss], bossPos.dx, bossPos.dy, 500 , 400);
 }
 
 
@@ -331,20 +333,20 @@ function draw() {
       frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
       delayCounter = 0;
     }
-   if (delayCounter >= frameDelay) {
+    if (delayCounter >= frameDelay) {
       frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
       delayCounter = 0;
     }
 
-  // Reset to idle after animations that dont loop finish
+    // Reset to idle after animations that dont loop finish
     if (frameIndex.player === Frames.player.length-1 && currentAnim.player !== "idle" && currentAnim.player !== "run" && currentAnim.player !== "runback") {
-    currentAnim.player = "idle"
-    frameIndex.player = 0
-  }
+      currentAnim.player = "idle"
+      frameIndex.player = 0
+    }
     if (frameIndex.boss === Frames.boss.length-1 && currentAnim.boss !== "idle" && currentAnim.boss !== "run" && currentAnim.boss !== "runback") {
-    currentAnim.boss = "idle"
-    frameIndex.boss = 0
-  }
+      currentAnim.boss = "idle"
+      frameIndex.boss = 0
+    }
 
   }
 }
@@ -362,10 +364,10 @@ function keyTyped() {
     yVelocity = -15; 
   }
   if (game === "start") {
-      game = "play";
-      if (bgMusic && !bgMusic.isPlaying()) {
-        bgMusic.loop();
-        bgMusic.setVolume(0.5);
+    game = "play";
+    if (bgMusic && !bgMusic.isPlaying()) {
+      bgMusic.loop();
+      bgMusic.setVolume(0.5);
 }
   }
 }
@@ -377,8 +379,8 @@ function keyPressed() {
     bossHealth = 100;
     charPos.dx = 0;
     charPos.dy = initialY;
-    bossPos.dx = 100;
-    bossPos.dy = 360;
+    bossPos.dx = width/2;
+    bossPos.dy = initialY + 30;
     currentAnim.player = "idle";
     currentAnim.boss = "idle";
     frameIndex.player = 0;

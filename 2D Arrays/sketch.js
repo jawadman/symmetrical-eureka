@@ -19,13 +19,12 @@
 
 //Global Variables
 
-const CELL_SIZE = 10;
-const OPEN_TILE = 0;
-const IMPASSIBLE = 1;
+let theGrid = [[1, 0, 1, 0],
+  [0, 0, 1, 1],
+  [1, 1, 0, 0],
+  [0, 1, 0, 1]];
+const SQUARE_DIMENSIONS = theGrid.length;
 
-let grid; 
-let rows;
-let cols;
 
 // Arrays to hold animation frames
 playerFrames = {
@@ -178,8 +177,6 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth * 0.9, windowHeight * 0.9);
-  cols = Math.floor(width/CELL_SIZE);
-  rows = Math.floor(height/CELL_SIZE);
   initialY = height / 2 - 65;
   charPos.dy = initialY;
   charPos.dx = width/4;
@@ -217,6 +214,23 @@ function draw() {
   }
   // Main Game
   else{
+
+  for (let y = 0; y < SQUARE_DIMENSIONS; y++) {
+    for (let x = 0; x < SQUARE_DIMENSIONS; x++) {
+      if (theGrid[y][x] === 1) {
+        fill("black");
+      }
+      else if (theGrid[y][x] === 0) {
+        fill("white");
+      }
+      square(x * cellSize, y * cellSize, cellSize);
+      }
+    }
+
+
+
+
+
     
     if (playerHealth <= 0 || bossHealth <= 0) {
       game = "gameOver";
@@ -349,7 +363,7 @@ function draw() {
     }
 
   }
-}
+} 
 function keyTyped() {
 
   // Change animation based on key pressed
@@ -454,20 +468,20 @@ function movement() {
 let attackRange = 20;
 let distanceX = charPos.dx - bossPos.dx;
 
-if (Math.abs(distanceX) > attackRange) {
+  if (Math.abs(distanceX) > attackRange) {
     if (distanceX > attackRange) { 
-        bossPos.dx += 2;
-        setAnimation("boss", "run");
+      bossPos.dx += 2;
+      setAnimation("boss", "run");
     } 
     else { 
-        bossPos.dx -= 2;
-        setAnimation("boss", "runback");
+      bossPos.dx -= 2;
+      setAnimation("boss", "runback");
     }
-} 
-else {
+  } 
+  else {
     if (currentAnim.boss !== "attack") {
-        setAnimation("boss", "attack");
-      }
+      setAnimation("boss", "attack");
+    }
   }
 }
 

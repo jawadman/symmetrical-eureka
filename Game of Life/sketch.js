@@ -7,15 +7,20 @@ let rows;
 let cols;
 let autoPlayIsOn = false;
 
+function preload() {
+  gosper = loadJSON("gosper.json"); 
+}
+
+
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth*0.9, windowHeight*0.9);
   cols = Math.floor(width/CELL_SIZE);
   rows = Math.floor(height/CELL_SIZE);
   grid = generateRandomGrid(cols, rows);
 }
 
 function draw() {
-  background(220);
+  background("blue");
   if (autoPlayIsOn && frameCount % RENDER_ON_FRAME === 0) {
     grid = updateGrid();
   }
@@ -54,6 +59,9 @@ function keyPressed() {
   }
   else if (key === "a") {
     autoPlayIsOn = !autoPlayIsOn;
+  }
+  else if (key === "g"){
+    grid = gosper;  
   }
 }
 
@@ -106,7 +114,7 @@ function displayGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       if (grid[y][x] === 0) {
-        fill("white");
+        fill("red");
       }
       else if (grid[y][x] === 1) {
         fill("black");

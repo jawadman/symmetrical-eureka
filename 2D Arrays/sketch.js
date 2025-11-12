@@ -16,19 +16,23 @@
 // I've also utilized the push() method to load images into these arrays during the preload() function.
 // I also have objects to manage the positions of the player, boss, and background.
 
-
 //Global Variables
 
-let theGrid = [[1, 0, 1, 0],
-  [0, 0, 1, 1],
-  [1, 1, 0, 0],
-  [0, 1, 0, 1]];
-const SQUARE_DIMENSIONS = theGrid.length;
+let platforms = [];
+let platformW = 200;
+let platformH = 20;
+let platformImg;
 
+let cellSize = 40;
+let showGrid = false;
+
+// 2D Array for grid alignment
+let worldGrid = [];
+const GRID_COLS = 20;
+const GRID_ROWS = 15;
 
 // Arrays to hold animation frames
 playerFrames = {
-
   idleFrames : [],
   rollFrames : [],
   attackFrames : [],
@@ -38,7 +42,6 @@ playerFrames = {
   runbackFrames : [],
   jumpUpFrames : [],
   jumpDownFrames : []
-
 };
 
 bossFrames = {
@@ -47,6 +50,7 @@ bossFrames = {
   runFrames : [],
   runbackFrames : []
 };
+
 // Total frames for each animation
 let totalRunFrames = 8;
 let totalRunBackFrames = 8;
@@ -69,20 +73,16 @@ let bg;
 let currentAnim ={
   player: "idle",
   boss: "idle",  
-} ;
+};
 
 // Object Positions
-backPos = {
-  dx: 800,
-  dy: 800
-};
 charPos = {
   dx: 0,
   dy: 0,
 };
 bossPos = {
-  dx: 100,
-  dy: 360
+  dx: 0,
+  dy: 0
 };
 let initialY;
 
@@ -113,10 +113,8 @@ function setAnimation(character, animName) {
   }
 }
 
-
 // Preload function to load images into the empty arrays, and load music
 function preload() {
-
   bgMusic = loadSound("assets/music/desertmusic.mp3");
 
   for (let i = 1; i <= totalIdleFrames; i++) {
@@ -154,36 +152,40 @@ function preload() {
   for (let i = 1; i <= totalJumpFrames; i++) {
     playerFrames.jumpDownFrames.push(loadImage(`assets/playerAnims/j_down_${i}.png`));
   }
+  
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
   }
-
 
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.runFrames.push(loadImage(`assets/bossAnims/run_${i}.png`));
   }
-  for (let i = 1; i <= totalIdleFrames; i++) {
-    bossFrames.idleFrames.push(loadImage(`assets/bossAnims/boss_idle_${i}.png`));
-  }
+  
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.attack1Frames.push(loadImage(`assets/bossAnims/boss_atk1_${i}.png`));
   }
+  
   for (let i = 1; i <= totalIdleFrames; i++) {
     bossFrames.runbackFrames.push(loadImage(`assets/bossAnims/run_back_${i}.png`));
   }
 
   bg = loadImage("assets/Desert_bg.jpg");
+  platformImg = loadImage("assets/platform.png");
 }
 
 function setup() {
   createCanvas(windowWidth * 0.9, windowHeight * 0.9);
-  initialY = height / 2 - 65;
+  initialY = height / 2 - 110;
+  
+  // Set positions aligned to grid
+  charPos.dx = 3 * cellSize; // Grid position (3,0)
   charPos.dy = initialY;
-  charPos.dx = width/4;
-  bossPos.dx = width/2;
+  
+  bossPos.dx = 15 * cellSize; // Grid position (15,0)
   bossPos.dy = initialY + 30;
+  
+  generatePlats();
 }
-
 
 function draw() {
   // Start Screen
@@ -191,7 +193,8 @@ function draw() {
     if (!bgMusic.isPlaying()) {
       bgMusic.loop();
       bgMusic.setVolume(0.5);
-    } timer = millis();
+    } 
+    timer = millis();
     background("black");
     textSize(36);
     textAlign(CENTER, CENTER);
@@ -210,28 +213,9 @@ function draw() {
     textSize(30);
     text("W to Jump, A to Move Left, D to Move Right", width / 2, height / 2 + 80); 
     text("Click to Attack, S to Block, Space to Roll", width / 2, height / 2 + 120);
-
   }
   // Main Game
   else{
-
-  for (let y = 0; y < SQUARE_DIMENSIONS; y++) {
-    for (let x = 0; x < SQUARE_DIMENSIONS; x++) {
-      if (theGrid[y][x] === 1) {
-        fill("black");
-      }
-      else if (theGrid[y][x] === 0) {
-        fill("white");
-      }
-      square(x * cellSize, y * cellSize, cellSize);
-      }
-    }
-
-
-
-
-
-    
     if (playerHealth <= 0 || bossHealth <= 0) {
       game = "gameOver";
     }
@@ -256,13 +240,14 @@ function draw() {
       return; 
     }
 
-
-
-    background(bg, backPos.dx, backPos.dy);
+    // SIMPLE BACKGROUND - no scrolling
+    image(bg, 0, 0, width, height);
+    drawPlats();
+    
     timerPassed = int((millis()-timer) / 1000);
     fill("black");
     textSize(20);
-    text("Time Wasted On These Plains: " + timerPassed + " seconds", 200, 30);
+    text("Time: " + timerPassed + " seconds", 200, 30);
 
     // Player Health Bar
     fill("green");
@@ -278,6 +263,13 @@ function draw() {
     noFill();
     rect(550, 50, 200, 20);
 
+    // Grid debug info
+    fill(255, 0, 0);
+    textSize(14);
+    let playerGridX = floor(charPos.dx / cellSize);
+    let playerGridY = floor(charPos.dy / cellSize);
+    text(`Player Grid: ${playerGridX},${playerGridY}`, 20, 120);
+    text(`Platforms: ${platforms.length}`, 20, 140);
 
     movement();
     updateBossAttack();
@@ -330,24 +322,19 @@ function draw() {
     else if (currentAnim.player === "jumpDown") {
       Frames.player = playerFrames.jumpDownFrames;
     }
-//console.log('Draw: ' + currentAnim.player);
+
     // Draws the current frame
     if (Frames.player.length > 0) {
       image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 200, 300);
-}
+    }
     if (Frames.boss.length > 0) {
       image(Frames.boss[frameIndex.boss], bossPos.dx, bossPos.dy, 500 , 400);
-}
-
+    }
 
     // Update the frame index based on animation delay
     delayCounter++;
     if (delayCounter >= frameDelay) {
       frameIndex.player = (frameIndex.player + 1) % Frames.player.length;
-      frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
-      delayCounter = 0;
-    }
-    if (delayCounter >= frameDelay) {
       frameIndex.boss = (frameIndex.boss + 1) % Frames.boss.length;
       delayCounter = 0;
     }
@@ -361,11 +348,122 @@ function draw() {
       currentAnim.boss = "idle"
       frameIndex.boss = 0
     }
-
   }
-} 
-function keyTyped() {
+  
+  if (showGrid) {
+    drawGrid();
+  }
+}
 
+// GRID-ALIGNED PLATFORM GENERATION
+function generatePlats() {
+  platforms = [];
+  worldGrid = [];
+  
+  // Initialize 2D array
+  for (let y = 0; y < GRID_ROWS; y++) {
+    worldGrid[y] = [];
+    for (let x = 0; x < GRID_COLS; x++) {
+      worldGrid[y][x] = 0; // 0 = empty, 1 = platform
+    }
+  }
+
+  // Create grid-aligned platforms
+  let platformPositions = [
+    {x: 2, y: 10}, {x: 5, y: 8}, {x: 8, y: 9}, {x: 11, y: 7}, 
+    {x: 14, y: 10}, {x: 17, y: 8}, {x: 3, y: 12}, {x: 6, y: 11},
+    {x: 9, y: 13}, {x: 12, y: 12}, {x: 15, y: 11}, {x: 18, y: 13}
+  ];
+
+  for (let pos of platformPositions) {
+    if (pos.x < GRID_COLS && pos.y < GRID_ROWS) {
+      worldGrid[pos.y][pos.x] = 1;
+      platforms.push({
+        x: pos.x * cellSize,
+        y: pos.y * cellSize,
+        width: platformW,
+        height: platformH,
+        gridX: pos.x,
+        gridY: pos.y
+      });
+    }
+  }
+}
+
+// DRAW GRID FUNCTION
+function drawGrid() {
+  noFill();
+  stroke(0, 0, 255, 100);
+  strokeWeight(1);
+
+  for (let y = 0; y < height; y += cellSize) {
+    for (let x = 0; x < width; x += cellSize) {
+      rect(x, y, cellSize, cellSize);
+    }
+  }
+  
+  // Draw grid coordinates
+  fill(0, 0, 255, 150);
+  textSize(10);
+  for (let y = 0; y < GRID_ROWS; y++) {
+    for (let x = 0; x < GRID_COLS; x++) {
+      if (x * cellSize < width && y * cellSize < height) {
+        text(`${x},${y}`, x * cellSize + 2, y * cellSize + 12);
+      }
+    }
+  }
+}
+
+// USE ACTUAL PLATFORM IMAGES - GRID ALIGNED
+function drawPlats() {
+  for (let plat of platforms) {
+    // Use the actual platform image asset aligned to grid
+    image(platformImg, plat.x, plat.y, plat.width, plat.height);
+    
+    // Show grid coordinates on platforms when grid is visible
+    if (showGrid) {
+      fill(255);
+      textSize(10);
+      text(`${plat.gridX},${plat.gridY}`, plat.x + 5, plat.y - 5);
+    }
+  }
+}
+
+function checkPlatCollision() {
+  let playerBottom = charPos.dy + 300;
+  let playerLeft = charPos.dx;
+  let playerRight = charPos.dx + 200;
+
+  let onPlatform = false;
+
+  for (let plat of platforms) {
+    // Check if player is currently standing on this platform
+    if (playerBottom === plat.y && 
+        playerRight > plat.x && 
+        playerLeft < plat.x + plat.width) {
+      onPlatform = true;
+      break;
+    }
+    
+    // Check if player is landing on this platform from above
+    if (playerBottom <= plat.y && 
+        playerBottom + yVelocity >= plat.y &&
+        playerRight > plat.x && 
+        playerLeft < plat.x + plat.width) {
+
+      charPos.dy = plat.y - 300;
+      isJumping = false;
+      yVelocity = 0;
+      currentAnim.player = "idle";
+      onPlatform = true;
+      break;
+    }
+  }
+
+  return onPlatform;
+}
+
+function keyTyped() {
   // Change animation based on key pressed
   if (key === " ") {
     setAnimation("player", "roll");
@@ -375,14 +473,17 @@ function keyTyped() {
   } 
   else if (key === "w" && !isJumping) {
     isJumping = true;
-    yVelocity = -15; 
+    yVelocity = -20; 
+  }
+  else if (key === 'g' || key === 'G') {
+    showGrid = !showGrid;
   }
   if (game === "start") {
     game = "play";
     if (bgMusic && !bgMusic.isPlaying()) {
       bgMusic.loop();
       bgMusic.setVolume(0.5);
-}
+    }
   }
 }
 
@@ -391,9 +492,9 @@ function keyPressed() {
     game = "start";
     playerHealth = 100;
     bossHealth = 100;
-    charPos.dx = 0;
+    charPos.dx = 3 * cellSize;
     charPos.dy = initialY;
-    bossPos.dx = width/2;
+    bossPos.dx = 15 * cellSize;
     bossPos.dy = initialY + 30;
     currentAnim.player = "idle";
     currentAnim.boss = "idle";
@@ -402,7 +503,6 @@ function keyPressed() {
     lastBossAttack = 0;
   }
 }
-
 
 // Right click to attack
 function mouseClicked() {
@@ -421,64 +521,75 @@ function mouseClicked() {
   }
 }
 
-
+// SIMPLE MOVEMENT - no scrolling
 function movement() {
-  // Horizontal movement
-  if (keyIsDown(65)) {
-    if (charPos.dx > 0) {
-    setAnimation("player", "runback");
-    charPos.dx -= 6;
-    }
-  } 
-  else if (keyIsDown(68)) {
-    if (charPos.dx < width - 100) {
+  const moveSpeed = 5;
+  
+  // === MOVE RIGHT (D) ===
+  if (keyIsDown(68)) { // D
     setAnimation("player", "run");
-    charPos.dx += 6;
+    // Simple movement - no scrolling
+    if (charPos.dx < width - 250) { // Keep within screen bounds
+      charPos.dx += moveSpeed;
     }
-  } 
-
-  // If no movement keys are pressed, the animation goes back to idle
+  }
+  // === MOVE LEFT (A) ===
+  else if (keyIsDown(65)) { // A
+    setAnimation("player", "runback");
+    // Simple movement - no scrolling
+    if (charPos.dx > 0) { // Keep within screen bounds
+      charPos.dx -= moveSpeed;
+    }
+  }
   else {
     if (currentAnim.player === "run" || currentAnim.player === "runback") {
       currentAnim.player = "idle";
     }
   }
 
-  // The jumping mechanic
+  // === JUMPING ===
   if (isJumping) {
     charPos.dy += yVelocity;
     yVelocity += gravity;
 
-    if (yVelocity < 0) {
-      currentAnim.player = "jumpUp";
-      frameIndex.player = 0;
-    } 
-    else {
-      currentAnim.player = "jumpDown";
-      frameIndex.player = 0;
-    }
-
-    if (charPos.dy >= initialY) {
+    let landed = checkPlatCollision();
+    if (!landed && charPos.dy >= initialY) {
       charPos.dy = initialY;
       isJumping = false;
       currentAnim.player = "idle";
+      landed = true;
+    }
+
+    if (!landed) {
+      if (yVelocity < 0) {
+        currentAnim.player = "jumpUp";
+        frameIndex.player = 0;
+      } else {
+        currentAnim.player = "jumpDown";
+        frameIndex.player = 0;
+      }
+    }
+  } else {
+    let onPlatform = checkPlatCollision();
+    if (!onPlatform && charPos.dy < initialY) {
+      isJumping = true;
+      yVelocity = 0;
     }
   }
 
-let attackRange = 20;
-let distanceX = charPos.dx - bossPos.dx;
+  // === BOSS MOVEMENT ===
+  const attackRange = 20;
+  const distanceX = charPos.dx - bossPos.dx;
 
   if (Math.abs(distanceX) > attackRange) {
-    if (distanceX > attackRange) { 
+    if (distanceX > 0) {
       bossPos.dx += 2;
       setAnimation("boss", "run");
-    } 
-    else { 
+    } else {
       bossPos.dx -= 2;
       setAnimation("boss", "runback");
     }
-  } 
-  else {
+  } else {
     if (currentAnim.boss !== "attack") {
       setAnimation("boss", "attack");
     }

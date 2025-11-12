@@ -372,9 +372,7 @@ function generatePlats() {
 
   // Create grid-aligned platforms
   let platformPositions = [
-    {x: 2, y: 10}, {x: 5, y: 8}, {x: 8, y: 9}, {x: 11, y: 7}, 
-    {x: 14, y: 10}, {x: 17, y: 8}, {x: 3, y: 12}, {x: 6, y: 11},
-    {x: 9, y: 13}, {x: 12, y: 12}, {x: 15, y: 11}, {x: 18, y: 13}
+    {x: 10, y: 11}
   ];
 
   for (let pos of platformPositions) {
@@ -403,17 +401,6 @@ function drawGrid() {
       rect(x, y, cellSize, cellSize);
     }
   }
-  
-  // Draw grid coordinates
-  fill(0, 0, 255, 150);
-  textSize(10);
-  for (let y = 0; y < GRID_ROWS; y++) {
-    for (let x = 0; x < GRID_COLS; x++) {
-      if (x * cellSize < width && y * cellSize < height) {
-        text(`${x},${y}`, x * cellSize + 2, y * cellSize + 12);
-      }
-    }
-  }
 }
 
 // USE ACTUAL PLATFORM IMAGES - GRID ALIGNED
@@ -421,20 +408,13 @@ function drawPlats() {
   for (let plat of platforms) {
     // Use the actual platform image asset aligned to grid
     image(platformImg, plat.x, plat.y, plat.width, plat.height);
-    
-    // Show grid coordinates on platforms when grid is visible
-    if (showGrid) {
-      fill(255);
-      textSize(10);
-      text(`${plat.gridX},${plat.gridY}`, plat.x + 5, plat.y - 5);
-    }
   }
 }
 
 function checkPlatCollision() {
   let playerBottom = charPos.dy + 300;
   let playerLeft = charPos.dx;
-  let playerRight = charPos.dx + 200;
+  let playerRight = charPos.dx + 50;
 
   let onPlatform = false;
 
@@ -525,23 +505,19 @@ function mouseClicked() {
   }
 }
 
-// SIMPLE MOVEMENT - no scrolling
+// All functions that relate to movement
 function movement() {
   const moveSpeed = 5;
   
-  // === MOVE RIGHT (D) ===
   if (keyIsDown(68)) { // D
     setAnimation("player", "run");
-    // Simple movement - no scrolling
-    if (charPos.dx < width - 250) { // Keep within screen bounds
+    if (charPos.dx < width - 250) {
       charPos.dx += moveSpeed;
     }
   }
-  // === MOVE LEFT (A) ===
   else if (keyIsDown(65)) { // A
     setAnimation("player", "runback");
-    // Simple movement - no scrolling
-    if (charPos.dx > 0) { // Keep within screen bounds
+    if (charPos.dx > 0) {
       charPos.dx -= moveSpeed;
     }
   }
@@ -551,7 +527,7 @@ function movement() {
     }
   }
 
-  // === JUMPING ===
+  // Jumping Mechanic
   if (isJumping) {
     charPos.dy += yVelocity;
     yVelocity += gravity;
@@ -581,7 +557,7 @@ function movement() {
     }
   }
 
-  // === BOSS MOVEMENT ===
+  // Boss AI
   const attackRange = 20;
   const distanceX = charPos.dx - bossPos.dx;
 

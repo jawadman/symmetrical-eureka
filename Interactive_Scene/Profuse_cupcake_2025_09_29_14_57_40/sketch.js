@@ -90,12 +90,16 @@ let game = "start";
 let timer = 0;
 let timerPassed = 0;
 
+// Health variables
 let playerHealth = 100;
 let bossHealth = 100;
 let maxHealth = 100; 
+
+// Boss attack variables
 let bossAttackCooldown = 800; 
 let lastBossAttack = 0;
 
+// Background music variable
 let bgMusic;
 
 // Function to change animation state
@@ -304,7 +308,6 @@ function draw() {
     else if (currentAnim.player === "jumpDown") {
       Frames.player = playerFrames.jumpDownFrames;
     }
-//console.log('Draw: ' + currentAnim.player);
     // Draws the current frame
     if (Frames.player.length > 0) {
   image(Frames.player[frameIndex.player], charPos.dx, charPos.dy, 200, 300);
@@ -438,6 +441,8 @@ function movement() {
       currentAnim.player = "idle";
     }
   }
+
+// Boss AI follows the player and attacks when in range
 
 let attackRange = 20;
 let distanceX = charPos.dx - bossPos.dx;

@@ -251,8 +251,6 @@ function draw() {
     textSize(20);
     text("Time: " + timerPassed + " seconds", 200, 30);
 
-    showGrid();
-
     // Player Health Bar
     fill("green");
     rect(50, 50, (playerHealth / maxHealth) * 200, 20);

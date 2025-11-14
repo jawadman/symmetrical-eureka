@@ -9,7 +9,9 @@
 - [Grid Demo](grid)
 - [Rectangle Neighbour's Demo](Neighbours)
 - [Game of Life](Game of Life)
-
+- [Walker OOP](WOOP)
+- [Fireworks OOP](fireworks)
 ## Assignments
 - [Interactive Screen](Interactive_Scene)
 - [Arrays and Objects](Arrays_Objects)
+- [2D Arrays](2D Arrays)

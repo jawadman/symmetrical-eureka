@@ -1,25 +1,20 @@
-// Arrays and Objects Assignment
+// 2D Arrays Assignment
 // Character Fighter Game
 // Jawad Imran
-// 26/10/25
+// 12/11/25
 
-// GOAL: use code from previous assignments to create an enemy that the player can fight.
+// GOAL: use code from previous assignments to create platforms using 2D arrays.
 // The player can move, jump, attack, block, and roll. The enemy chases the player and attacks when close enough.
 // The game ends when either the player or the enemy runs out of health.
 // Controls: A and D to move left and right, W to jump, S to block, click to attack, space to roll
 
-// For my extra for experts, I added background music that loops during gameplay.
-// I also added health bars for both the player and the boss, which decrease when they take damage.
-// The boss has a cooldown period between attacks.
+// For my extra for experts, I added an animation log that outputs the names and frame counts of all loaded animations to the console when the game starts. I used the
+// Objects.keys() method to iterate through the animation frame arrays stored in objects for both the player and the boss
+// also utilizing the forEach() method to loop through each animation name and log the frame count.
 
-// In terms of the basic requirements, for the assignment, I already have several arrays to hold animation frames for different actions (idle, run, attack, block, roll, jump).
-// I've also utilized the push() method to load images into these arrays during the preload() function.
-// I also have objects to manage the positions of the player, boss, and background.
+// In terms of the basic requirements, for the assignment, I have used 2D arrays to create platforms in the world.
 
 //Global Variables
-let theGrid;
-const SQUARE_DIMENSIONS = 20;
-
 let platforms = [];
 let platformW = 200;
 let platformH = 20;
@@ -176,7 +171,7 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(windowWidth * 0.9, windowHeight * 0.9);
+  createCanvas(1200, 700);
   initialY = height / 2 - 110;
   
   // Set positions aligned to grid
@@ -242,14 +237,14 @@ function draw() {
       return; 
     }
 
-    // SIMPLE BACKGROUND - no scrolling
+    // Background and Platforms
     image(bg, 0, 0, width, height);
     drawPlats();
     
     timerPassed = int((millis()-timer) / 1000);
     fill("black");
     textSize(20);
-    text("Time: " + timerPassed + " seconds", 200, 30);
+    text("Time Wasted On these Plains: " + timerPassed , 200, 30);
 
     // Player Health Bar
     fill("green");
@@ -260,18 +255,10 @@ function draw() {
 
     // Boss Health Bar
     fill("green");
-    rect(550, 50, (bossHealth / maxHealth) * 200, 20);
+    rect(950, 50, (bossHealth / maxHealth) * 200, 20);
     stroke(0);
     noFill();
-    rect(550, 50, 200, 20);
-
-    // Grid debug info
-    fill(255, 0, 0);
-    textSize(14);
-    let playerGridX = floor(charPos.dx / cellSize);
-    let playerGridY = floor(charPos.dy / cellSize);
-    text(`Player Grid: ${playerGridX},${playerGridY}`, 20, 120);
-    text(`Platforms: ${platforms.length}`, 20, 140);
+    rect(950, 50, 200, 20);
 
     movement();
     updateBossAttack();
@@ -357,7 +344,33 @@ function draw() {
   }
 }
 
-// GRID-ALIGNED PLATFORM GENERATION
+// Logs loaded animations and their frame counts
+function animLog() {
+  console.log("------Animations loaded------");
+
+  console.log("Player Frames: ");
+  Object.keys(playerFrames).forEach((animName) => {
+    if (Array.isArray(playerFrames[animName])) {
+      let frameCount = playerFrames[animName].length;
+      console.log(animName + ": " + frameCount + " frames");
+    }
+    else {
+      console.log(animName + ": Not an array");
+    }
+  });
+
+  console.log("Boss Frames: ");
+  Object.keys(bossFrames).forEach((animName) => {
+    if (Array.isArray(bossFrames[animName])) {
+      let frameCount = bossFrames[animName].length;
+      console.log(animName + ": " + frameCount + " frames");
+    }
+    else {
+      console.log(animName + ": Not an array");
+    }
+  });
+}
+// Platform Generation
 function generatePlats() {
   platforms = [];
   worldGrid = [];
@@ -370,9 +383,9 @@ function generatePlats() {
     }
   }
 
-  // Create grid-aligned platforms
+  // Create platforms at specific grid positions
   let platformPositions = [
-    {x: 10, y: 11}
+    {x: 14, y: 10}, {x: 5, y: 5}, {x: 19, y: 7}
   ];
 
   for (let pos of platformPositions) {
@@ -390,10 +403,10 @@ function generatePlats() {
   }
 }
 
-// DRAW GRID FUNCTION
+// Draws a grid outline
 function drawGrid() {
   noFill();
-  stroke(0, 0, 255, 100);
+  stroke("blue");
   strokeWeight(1);
 
   for (let y = 0; y < height; y += cellSize) {
@@ -403,14 +416,14 @@ function drawGrid() {
   }
 }
 
-// USE ACTUAL PLATFORM IMAGES - GRID ALIGNED
+// Draws platform asset based on 2D array
 function drawPlats() {
   for (let plat of platforms) {
-    // Use the actual platform image asset aligned to grid
     image(platformImg, plat.x, plat.y, plat.width, plat.height);
   }
 }
 
+// Check for platform collisions
 function checkPlatCollision() {
   let playerBottom = charPos.dy + 300;
   let playerLeft = charPos.dx;
@@ -462,6 +475,8 @@ function keyTyped() {
   }
   if (game === "start") {
     game = "play";
+
+    animLog();
     if (bgMusic && !bgMusic.isPlaying()) {
       bgMusic.loop();
       bgMusic.setVolume(0.5);
@@ -469,6 +484,7 @@ function keyTyped() {
   }
 }
 
+// R key to restart after game ends
 function keyPressed() {
   if (game === "gameOver" && (key === 'r' || key === 'R')) {
     game = "start";
@@ -505,18 +521,22 @@ function mouseClicked() {
   }
 }
 
-// All functions that relate to movement
+// Moevement functions 
 function movement() {
   const moveSpeed = 5;
   
-  if (keyIsDown(68)) { // D
+  
+  if (keyIsDown(68)) {
     setAnimation("player", "run");
+    
     if (charPos.dx < width - 250) {
       charPos.dx += moveSpeed;
     }
   }
-  else if (keyIsDown(65)) { // A
+
+  else if (keyIsDown(65)) {
     setAnimation("player", "runback");
+    
     if (charPos.dx > 0) {
       charPos.dx -= moveSpeed;
     }
@@ -549,7 +569,8 @@ function movement() {
         frameIndex.player = 0;
       }
     }
-  } else {
+  } 
+  else {
     let onPlatform = checkPlatCollision();
     if (!onPlatform && charPos.dy < initialY) {
       isJumping = true;
@@ -558,31 +579,44 @@ function movement() {
   }
 
   // Boss AI
-  const attackRange = 20;
-  const distanceX = charPos.dx - bossPos.dx;
+  const attackRangeX = 20;
+  const attackRangeY = 75;
+  
+  let distanceX = charPos.dx - bossPos.dx;
+  let absoluteDistanceY = Math.abs(charPos.dy - bossPos.dy);
+  let absoluteDistanceX = Math.abs(distanceX);
 
-  if (Math.abs(distanceX) > attackRange) {
-    if (distanceX > 0) {
-      bossPos.dx += 2;
-      setAnimation("boss", "run");
-    } else {
-      bossPos.dx -= 2;
-      setAnimation("boss", "runback");
+  if (absoluteDistanceX <= attackRangeX && absoluteDistanceY <= attackRangeY) {
+    if (currentAnim.boss !== "idle" && currentAnim.boss !== "attack") {
+      setAnimation("boss", "idle");
     }
-  } else {
-    if (currentAnim.boss !== "attack") {
-      setAnimation("boss", "attack");
+  }
+  else if (distanceX > 0) {
+    bossPos.dx += 2;
+    setAnimation("boss", "run");
+  } 
+    
+  else if (distanceX < 0) {
+    bossPos.dx -= 2;
+    setAnimation("boss", "runback");
+  }
+
+  else {
+    if (currentAnim.boss !== "idle") {
+      setAnimation("boss", "idle");
     }
   }
 }
 
 function updateBossAttack() {
   let distanceX = Math.abs(charPos.dx - bossPos.dx);
+  let distanceY = Math.abs(charPos.dy - bossPos.dy);
 
-  if (distanceX <= 20 && millis() - lastBossAttack > bossAttackCooldown) {
+  if (distanceX <= 20 && distanceY <= 100 && millis() - lastBossAttack > bossAttackCooldown) {
     playerHealth -= 10;
-    if (playerHealth < 0) playerHealth = 0;
-
+    if (playerHealth < 0){
+      playerHealth = 0;
+    }
     setAnimation("boss", "attack"); 
     lastBossAttack = millis();
   }

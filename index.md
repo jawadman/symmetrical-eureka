@@ -11,6 +11,9 @@
 - [Game of Life](Game of Life)
 - [Walker OOP](WOOP)
 - [Fireworks OOP](fireworks)
+- [OOP Nodes](OOPN)
+- [OOP Inheritance](OOPI)
+- [Shape Inheritance](ShapeI)
 ## Assignments
 - [Interactive Screen](Interactive_Scene)
 - [Arrays and Objects](Arrays_Objects)
